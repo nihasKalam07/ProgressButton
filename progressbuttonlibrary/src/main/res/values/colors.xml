@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="pb_grey">#ffdedede</color>
+    <color name="pb_blue">#ff0099cc</color>
+    <color name="pb_blue_dark">#ff00719b</color>
+    <color name="pb_red">#ffff4444</color>
+    <color name="pb_red_dark">#ffcd3a3a</color>
+    <color name="pb_green">#ff99cc00</color>
+    <color name="pb_green_dark">#ff6d9b00</color>
+    <color name="pb_white">@android:color/white</color>
+</resources>
