@@ -27,6 +27,7 @@ public class CircularProgressButton extends Button {
     public static final int ERROR_STATE_PROGRESS = -1;
     public static final int SUCCESS_STATE_PROGRESS = 100;
     public static final int INDETERMINATE_STATE_PROGRESS = 50;
+    public static final int CANCEL_STATE_PROGRESS = -2;
     private static final int IDLE_STATE_ANIMATION_DURATION_AFTER_CLICK = 600;
 
     private StrokeGradientDrawable background;
@@ -35,10 +36,12 @@ public class CircularProgressButton extends Button {
     private ColorStateList mIdleColorState;
     private ColorStateList mCompleteColorState;
     private ColorStateList mErrorColorState;
+    private ColorStateList mCancelColorState;
 
     private StateListDrawable mIdleStateDrawable;
     private StateListDrawable mCompleteStateDrawable;
     private StateListDrawable mErrorStateDrawable;
+    private StateListDrawable mCancelStateDrawable;
 
     private StateManager mStateManager;
     private State mState;
@@ -61,9 +64,11 @@ public class CircularProgressButton extends Button {
     private int mIdleStateTextColorAfterClick;
     private int mIdleStateBackgroundColorAfterClick;
     private int textSize;
+    private int customSweepDuration = -1;
+    private OnAnimationUpdateListener onAnimationUpdateListener;
 
     private enum State {
-        PROGRESS, IDLE, COMPLETE, ERROR
+        PROGRESS, IDLE, COMPLETE, ERROR, CANCEL
     }
 
     private int mMaxProgress;
@@ -119,6 +124,16 @@ public class CircularProgressButton extends Button {
 
         mCompleteStateDrawable.addState(new int[]{android.R.attr.state_pressed}, drawablePressed.getGradientDrawable());
         mCompleteStateDrawable.addState(StateSet.WILD_CARD, background.getGradientDrawable());
+    }
+
+    private void initCancelStateDrawable() {
+        int colorPressed = getPressedColor(mCancelColorState);
+
+        StrokeGradientDrawable drawablePressed = createDrawable(colorPressed);
+        mCancelStateDrawable = new StateListDrawable();
+
+        mCancelStateDrawable.addState(new int[]{android.R.attr.state_pressed}, drawablePressed.getGradientDrawable());
+        mCancelStateDrawable.addState(StateSet.WILD_CARD, background.getGradientDrawable());
     }
 
     private void initIdleStateDrawable() {
@@ -233,7 +248,13 @@ public class CircularProgressButton extends Button {
             mColorIndicatorBackground =
                     attr.getColor(R.styleable.CircularProgressButton_pb_colorIndicatorBackground, grey);
             mIdleStateTextColorAfterClick = attr.getColor(R.styleable.CircularProgressButton_pb_textColorAfterClick, getNormalColor(mIdleColorState));
-            mIdleStateBackgroundColorAfterClick = attr.getColor(R.styleable.CircularProgressButton_pb_backgroundColorAfterClick, getPressedColor(mIdleColorState));
+            if (idleStateStrokeColor != -1) {
+                mIdleStateBackgroundColorAfterClick = attr.getColor(R.styleable.CircularProgressButton_pb_backgroundColorAfterClick, getColor(idleStateStrokeColor));
+            } else {
+                mIdleStateBackgroundColorAfterClick = attr.getColor(R.styleable.CircularProgressButton_pb_backgroundColorAfterClick, getPressedColor(mIdleColorState));
+            }
+//            mStrokeWidth = attr.getInteger(R.styleable.CircularProgressButton_pb_strokeWidth, (int)getContext().getResources().getDimension(R.dimen.pb_stroke_width));
+
         } finally {
             attr.recycle();
         }
@@ -259,9 +280,10 @@ public class CircularProgressButton extends Button {
     private void drawProgress(Canvas canvas) {
         if (mAnimatedDrawable == null) {
             int offset = (getWidth() - getHeight()) / 2;
-            mAnimatedDrawable = new CircularAnimatedDrawable(mColorIndicator, mStrokeWidth, mIndeterminateProgressMode);
+            mAnimatedDrawable = new CircularAnimatedDrawable(mColorIndicator, mStrokeWidth, mIndeterminateProgressMode, customSweepDuration);
             if (!mIndeterminateProgressMode) {
                 mAnimatedDrawable.setListener(getDeterminateProgressBarCompleteStateListener());
+                mAnimatedDrawable.setOnAnimationUpdateListener(onAnimationUpdateListener);
             }
             int left = offset + mPaddingProgress;
             int right = getWidth() - offset - mPaddingProgress;
@@ -271,6 +293,7 @@ public class CircularProgressButton extends Button {
             mAnimatedDrawable.setCallback(this);
             mAnimatedDrawable.start();
         } else {
+            mAnimatedDrawable.start();
             mAnimatedDrawable.draw(canvas);
         }
     }
@@ -616,6 +639,10 @@ public class CircularProgressButton extends Button {
         background.setStrokeColor(color);
         idleStateStrokeColor = color;
     }
+    public void setCustomSweepDuration(int duration) {
+        customSweepDuration = duration;
+    }
+
 
     public String getIdleText() {
         return mIdleText;
@@ -715,30 +742,42 @@ public class CircularProgressButton extends Button {
     }
 
     public void showProgress() {
-        if (getProgress() == 0) {
-            setProgress(50);
+        if (getProgress() == IDLE_STATE_PROGRESS) {
+            setProgress(INDETERMINATE_STATE_PROGRESS);
         }
     }
 
     public void showIdle() {
-        if (getProgress() == 100 || getProgress() == -1)
-            setProgress(0);
+        if (getProgress() == SUCCESS_STATE_PROGRESS || getProgress() == ERROR_STATE_PROGRESS)
+            setProgress(IDLE_STATE_PROGRESS);
     }
 
     public void showComplete() {
-        setProgress(100);
+        if (mAnimatedDrawable != null)
+            mAnimatedDrawable.stop();
+        setProgress(SUCCESS_STATE_PROGRESS);
+    }
+
+    public void showCancel() {
+        if (mAnimatedDrawable != null)
+            mAnimatedDrawable.stop();
+        setProgress(CANCEL_STATE_PROGRESS);
     }
 
     public void showError() {
-        setProgress(-1);
+        setProgress(ERROR_STATE_PROGRESS);
     }
 
     public boolean isIdle() {
-        return (getProgress() == 0 ? true : false);
+        return (getProgress() == IDLE_STATE_PROGRESS ? true : false);
     }
 
     public boolean isErrorOrComplete() {
-        return ((getProgress() == 100 || getProgress() == -1) ? true : false);
+        return ((getProgress() == SUCCESS_STATE_PROGRESS || getProgress() == ERROR_STATE_PROGRESS) ? true : false);
+    }
+
+    public boolean isProgress() {
+        return ((getProgress() != SUCCESS_STATE_PROGRESS && getProgress() == ERROR_STATE_PROGRESS && getProgress() == IDLE_STATE_PROGRESS) ? true : false);
     }
 
     private OnAnimationEndListener getDeterminateProgressBarCompleteStateListener() {
@@ -772,7 +811,7 @@ public class CircularProgressButton extends Button {
         bgAnim.start();
 
         int textSizeAnimationDuration = 150;
-        ValueAnimator animator = ValueAnimator.ofFloat(textSize, textSize - 4);
+        ValueAnimator animator = ValueAnimator.ofFloat(textSize, textSize - textSize/4);
         animator.setDuration(textSizeAnimationDuration);
         animator.setRepeatCount(1);
         animator.setRepeatMode(ValueAnimator.REVERSE);
@@ -785,5 +824,9 @@ public class CircularProgressButton extends Button {
         });
 
         animator.start();
+    }
+
+    public void setOnAnimationUpdateListener(OnAnimationUpdateListener onAnimationUpdateListener) {
+        this.onAnimationUpdateListener = onAnimationUpdateListener;
     }
 }

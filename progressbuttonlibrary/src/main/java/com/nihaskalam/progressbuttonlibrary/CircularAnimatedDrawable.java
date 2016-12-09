@@ -26,7 +26,7 @@ class CircularAnimatedDrawable extends Drawable implements Animatable {
     private final RectF fBounds = new RectF();
 
     private ObjectAnimator mObjectAnimatorSweep;
-//    private ObjectAnimator mObjectAnimatorAngle;
+    //    private ObjectAnimator mObjectAnimatorAngle;
     private boolean mModeAppearing;
     private Paint mPaint;
     private float mCurrentGlobalAngleOffset;
@@ -36,8 +36,11 @@ class CircularAnimatedDrawable extends Drawable implements Animatable {
     private boolean mRunning;
     private boolean mIndeterminateProgressMode;
     private OnAnimationEndListener mListener;
+    private int mCustomSweepDuration;
+    private OnAnimationUpdateListener onAnimationUpdateListener;
+    private float cancelButtonSpokeLength;
 
-    public CircularAnimatedDrawable(int color, float borderWidth, boolean indeterminateProgressMode) {
+    public CircularAnimatedDrawable(int color, float borderWidth, boolean indeterminateProgressMode, int mCustomSweepDuration) {
         mBorderWidth = borderWidth;
         mIndeterminateProgressMode = indeterminateProgressMode;
         mPaint = new Paint();
@@ -45,7 +48,7 @@ class CircularAnimatedDrawable extends Drawable implements Animatable {
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeWidth(borderWidth);
         mPaint.setColor(color);
-
+        this.mCustomSweepDuration = mCustomSweepDuration;
         setupAnimations();
     }
 
@@ -63,6 +66,9 @@ class CircularAnimatedDrawable extends Drawable implements Animatable {
 
 //        mPaint.setColor(color);
         canvas.drawArc(fBounds, 270, mCurrentSweepAngle, false, mPaint);
+        cancelButtonSpokeLength = (int)fBounds.width()/3;
+        canvas.drawLine(fBounds.left + cancelButtonSpokeLength, fBounds.bottom - cancelButtonSpokeLength, fBounds.right - cancelButtonSpokeLength, fBounds.top + cancelButtonSpokeLength, mPaint);
+        canvas.drawLine(fBounds.left + cancelButtonSpokeLength, fBounds.top + cancelButtonSpokeLength, fBounds.right - cancelButtonSpokeLength, fBounds.bottom - cancelButtonSpokeLength, mPaint);
     }
 
     @Override
@@ -131,10 +137,13 @@ class CircularAnimatedDrawable extends Drawable implements Animatable {
 
         mObjectAnimatorSweep = ObjectAnimator.ofFloat(this, mSweepProperty, 360f);// - MIN_SWEEP_ANGLE * 2);
         mObjectAnimatorSweep.setInterpolator(SWEEP_INTERPOLATOR);
-        mObjectAnimatorSweep.setDuration(SWEEP_ANIMATOR_DURATION);
+
         if (mIndeterminateProgressMode) {
+            mObjectAnimatorSweep.setDuration(SWEEP_ANIMATOR_DURATION);
             mObjectAnimatorSweep.setRepeatMode(ValueAnimator.RESTART);
             mObjectAnimatorSweep.setRepeatCount(ValueAnimator.INFINITE);
+        } else {
+            mObjectAnimatorSweep.setDuration(mCustomSweepDuration == -1 ? SWEEP_ANIMATOR_DURATION : mCustomSweepDuration);
         }
         mObjectAnimatorSweep.addListener(new Animator.AnimatorListener() {
             @Override
@@ -159,6 +168,14 @@ class CircularAnimatedDrawable extends Drawable implements Animatable {
             @Override
             public void onAnimationRepeat(Animator animation) {
                 toggleAppearingMode();
+            }
+        });
+        mObjectAnimatorSweep.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                if (onAnimationUpdateListener != null)
+                    onAnimationUpdateListener.onAnimationTimeUpdate((int) valueAnimator.getCurrentPlayTime());
+
             }
         });
     }
@@ -212,4 +229,7 @@ class CircularAnimatedDrawable extends Drawable implements Animatable {
         mListener = listener;
     }
 
+    public void setOnAnimationUpdateListener(OnAnimationUpdateListener onAnimationUpdateListener) {
+        this.onAnimationUpdateListener = onAnimationUpdateListener;
+    }
 }
