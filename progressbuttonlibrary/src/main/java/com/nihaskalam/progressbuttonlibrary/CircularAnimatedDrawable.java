@@ -23,6 +23,7 @@ class CircularAnimatedDrawable extends Drawable implements Animatable {
     private static final int ANGLE_ANIMATOR_DURATION = 1500;
     private static final int SWEEP_ANIMATOR_DURATION = 800;
     public static final int MIN_SWEEP_ANGLE = 30;
+    private static final float ANGLE_MULTIPLIER = 3.6f;
     private final RectF fBounds = new RectF();
 
     private ObjectAnimator mObjectAnimatorSweep;
@@ -39,8 +40,12 @@ class CircularAnimatedDrawable extends Drawable implements Animatable {
     private int mCustomSweepDuration;
     private OnAnimationUpdateListener onAnimationUpdateListener;
     private float cancelButtonSpokeLength;
+    private float maxAngle = 360f;
+    private float minAngle = 0f;
+    private boolean customProgressMode = false;
+    private float customProgress = -1;
 
-    public CircularAnimatedDrawable(int color, float borderWidth, boolean indeterminateProgressMode, int mCustomSweepDuration) {
+    public CircularAnimatedDrawable(int color, float borderWidth, boolean indeterminateProgressMode) {
         mBorderWidth = borderWidth;
         mIndeterminateProgressMode = indeterminateProgressMode;
         mPaint = new Paint();
@@ -48,8 +53,6 @@ class CircularAnimatedDrawable extends Drawable implements Animatable {
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeWidth(borderWidth);
         mPaint.setColor(color);
-        this.mCustomSweepDuration = mCustomSweepDuration;
-        setupAnimations();
     }
 
     @Override
@@ -66,7 +69,7 @@ class CircularAnimatedDrawable extends Drawable implements Animatable {
 
 //        mPaint.setColor(color);
         canvas.drawArc(fBounds, 270, mCurrentSweepAngle, false, mPaint);
-        cancelButtonSpokeLength = (int)fBounds.width()/3;
+        cancelButtonSpokeLength = (int) fBounds.width() / 3;
         canvas.drawLine(fBounds.left + cancelButtonSpokeLength, fBounds.bottom - cancelButtonSpokeLength, fBounds.right - cancelButtonSpokeLength, fBounds.top + cancelButtonSpokeLength, mPaint);
         canvas.drawLine(fBounds.left + cancelButtonSpokeLength, fBounds.top + cancelButtonSpokeLength, fBounds.right - cancelButtonSpokeLength, fBounds.bottom - cancelButtonSpokeLength, mPaint);
     }
@@ -127,17 +130,19 @@ class CircularAnimatedDrawable extends Drawable implements Animatable {
             object.setCurrentSweepAngle(value);
         }
     };
+    public void initAnimations() {
+        setupAnimations(customProgressMode ? minAngle : maxAngle);
+    }
 
-    private void setupAnimations() {
+    private void setupAnimations(float angleToDraw) {
 //        mObjectAnimatorAngle = ObjectAnimator.ofFloat(this, mAngleProperty, 360f);
 //        mObjectAnimatorAngle.setInterpolator(ANGLE_INTERPOLATOR);
 //        mObjectAnimatorAngle.setDuration(ANGLE_ANIMATOR_DURATION);
 //        mObjectAnimatorAngle.setRepeatMode(ValueAnimator.RESTART);
 //        mObjectAnimatorAngle.setRepeatCount(ValueAnimator.INFINITE);
 
-        mObjectAnimatorSweep = ObjectAnimator.ofFloat(this, mSweepProperty, 360f);// - MIN_SWEEP_ANGLE * 2);
+        mObjectAnimatorSweep = ObjectAnimator.ofFloat(this, mSweepProperty, angleToDraw);// - MIN_SWEEP_ANGLE * 2);
         mObjectAnimatorSweep.setInterpolator(SWEEP_INTERPOLATOR);
-
         if (mIndeterminateProgressMode) {
             mObjectAnimatorSweep.setDuration(SWEEP_ANIMATOR_DURATION);
             mObjectAnimatorSweep.setRepeatMode(ValueAnimator.RESTART);
@@ -153,6 +158,11 @@ class CircularAnimatedDrawable extends Drawable implements Animatable {
 
             @Override
             public void onAnimationEnd(Animator animation) {
+                if(customProgressMode) {
+                    if (customProgress != 360) {
+                        return;
+                    }
+                }
                 if (mListener != null) {
                     mListener.onAnimationEnd();
 //                    mCurrentSweepAngle = 0;
@@ -231,5 +241,20 @@ class CircularAnimatedDrawable extends Drawable implements Animatable {
 
     public void setOnAnimationUpdateListener(OnAnimationUpdateListener onAnimationUpdateListener) {
         this.onAnimationUpdateListener = onAnimationUpdateListener;
+    }
+
+    public void drawProgress(float angle) {
+        stop();
+        customProgress = angle * ANGLE_MULTIPLIER > maxAngle ? angle * ANGLE_MULTIPLIER - maxAngle : angle * ANGLE_MULTIPLIER;
+        setupAnimations(customProgress);
+        start();
+    }
+
+    public void setCustomProgressMode(boolean customProgressMode) {
+        this.customProgressMode = customProgressMode;
+    }
+
+    public void setmCustomSweepDuration(int mCustomSweepDuration) {
+        this.mCustomSweepDuration = mCustomSweepDuration;
     }
 }

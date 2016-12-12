@@ -8,4 +8,5 @@
     <color name="pb_green">#ff99cc00</color>
     <color name="pb_green_dark">#ff6d9b00</color>
     <color name="pb_white">@android:color/white</color>
+    <color name="pb_orange">@android:color/holo_orange_dark</color>
 </resources>

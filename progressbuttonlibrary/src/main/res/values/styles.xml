@@ -18,6 +18,9 @@
         <attr name="pb_isIndeterminate" format="boolean"/>
         <attr name="pb_textColorAfterClick" format="color"/>
         <attr name="pb_backgroundColorAfterClick" format="color"/>
+        <attr name="pb_selectorCancel" format="reference"/>
+        <attr name="pb_iconCancel" format="reference"/>
+        <attr name="pb_textCancel" format="string"/>
     </declare-styleable>
 
 </resources>
