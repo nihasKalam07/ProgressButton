@@ -21,7 +21,7 @@ import android.util.StateSet;
 import android.view.animation.BounceInterpolator;
 import android.widget.Button;
 
-public class CircularProgressButton extends Button {
+public class CircularProgressButton extends Button implements OnAnimationUpdateListener {
 
     public static final int IDLE_STATE_PROGRESS = 0;
     public static final int ERROR_STATE_PROGRESS = -1;
@@ -67,9 +67,11 @@ public class CircularProgressButton extends Button {
     private int mIdleStateBackgroundColorAfterClick;
     private int textSize;
     private int customSweepDuration = -1;
-    private OnAnimationUpdateListener onAnimationUpdateListener;
-    private float customProgress = -1;
+    private OnAnimationUpdateTimeListener onAnimationUpdateTimeListener;
+    private int customProgress = -1;
     private boolean customProgressMode = false;
+    private float mCurrentSweepAngle = -1;
+    private int mRemainingTime = -1;
 
     private enum State {
         PROGRESS, IDLE, COMPLETE, ERROR, CANCEL
@@ -79,6 +81,18 @@ public class CircularProgressButton extends Button {
     private int mProgress;
 
     private boolean mMorphingInProgress;
+
+    @Override
+    public void onAnimationValueUpdate(float value) {
+        mCurrentSweepAngle = value;
+    }
+
+    @Override
+    public void onAnimationTimeUpdate(int timeElapsed, int totalDuration) {
+        mRemainingTime = totalDuration - timeElapsed;
+        if (onAnimationUpdateTimeListener != null)
+            onAnimationUpdateTimeListener.onAnimationTimeUpdate(timeElapsed);
+    }
 
     public CircularProgressButton(Context context) {
         super(context);
@@ -295,11 +309,16 @@ public class CircularProgressButton extends Button {
             mAnimatedDrawable.setmCustomSweepDuration(customSweepDuration);
             if (!mIndeterminateProgressMode) {
                 mAnimatedDrawable.setListener(getDeterminateProgressBarCompleteStateListener());
-                mAnimatedDrawable.setOnAnimationUpdateListener(onAnimationUpdateListener);
+//                mAnimatedDrawable.setOnAnimationTimeUpdateListener(onAnimationUpdateTimeListener);
+                mAnimatedDrawable.setOnAnimationUpdateListener(this);
+                if (mRemainingTime > 0)
+                    mAnimatedDrawable.setCurrentSweepAngleAndTimeRemaining(mCurrentSweepAngle, mRemainingTime);
             }
             if (customProgressMode) {
                 mAnimatedDrawable.setListener(getDeterminateProgressBarCompleteStateListener());
                 mAnimatedDrawable.setCustomProgressMode(true);
+                mAnimatedDrawable.setOnAnimationUpdateListener(this);
+                mAnimatedDrawable.drawProgress(mCurrentSweepAngle);
             }
             mAnimatedDrawable.initAnimations();
             int left = offset + mPaddingProgress;
@@ -770,6 +789,8 @@ public class CircularProgressButton extends Button {
         Parcelable superState = super.onSaveInstanceState();
         SavedState savedState = new SavedState(superState);
         savedState.mProgress = mProgress;
+        savedState.mElapsedTime = mRemainingTime;
+        savedState.mCurrentSweepAngle = mCurrentSweepAngle;
         savedState.mIndeterminateProgressMode = mIndeterminateProgressMode;
         savedState.mConfigurationChanged = true;
 
@@ -783,6 +804,8 @@ public class CircularProgressButton extends Button {
             mProgress = savedState.mProgress;
             mIndeterminateProgressMode = savedState.mIndeterminateProgressMode;
             mConfigurationChanged = savedState.mConfigurationChanged;
+            mCurrentSweepAngle = savedState.mCurrentSweepAngle;
+            mRemainingTime = savedState.mElapsedTime;
             super.onRestoreInstanceState(savedState.getSuperState());
             setProgress(mProgress);
         } else {
@@ -796,6 +819,8 @@ public class CircularProgressButton extends Button {
         private boolean mIndeterminateProgressMode;
         private boolean mConfigurationChanged;
         private int mProgress;
+        private float mCurrentSweepAngle;
+        private int mElapsedTime;
 
         public SavedState(Parcelable parcel) {
             super(parcel);
@@ -804,6 +829,8 @@ public class CircularProgressButton extends Button {
         private SavedState(Parcel in) {
             super(in);
             mProgress = in.readInt();
+            mElapsedTime = in.readInt();
+            mCurrentSweepAngle = in.readFloat();
             mIndeterminateProgressMode = in.readInt() == 1;
             mConfigurationChanged = in.readInt() == 1;
         }
@@ -812,6 +839,8 @@ public class CircularProgressButton extends Button {
         public void writeToParcel(Parcel out, int flags) {
             super.writeToParcel(out, flags);
             out.writeInt(mProgress);
+            out.writeInt(mElapsedTime);
+            out.writeFloat(mCurrentSweepAngle);
             out.writeInt(mIndeterminateProgressMode ? 1 : 0);
             out.writeInt(mConfigurationChanged ? 1 : 0);
         }
@@ -842,6 +871,8 @@ public class CircularProgressButton extends Button {
     }
 
     public void showComplete() {
+        mCurrentSweepAngle = -1;
+        mRemainingTime = -1;
         if (mAnimatedDrawable != null)
             mAnimatedDrawable.stop();
         if (isProgress())
@@ -849,13 +880,20 @@ public class CircularProgressButton extends Button {
     }
 
     public void showCancel() {
+        mCurrentSweepAngle = -1;
+        mRemainingTime = -1;
         setProgress(CANCEL_STATE_PROGRESS);
         if (mAnimatedDrawable != null)
             mAnimatedDrawable.stop();
     }
 
     public void showError() {
-        setProgress(ERROR_STATE_PROGRESS);
+        mCurrentSweepAngle = -1;
+        mRemainingTime = -1;
+        if (mAnimatedDrawable != null)
+            mAnimatedDrawable.stop();
+        if (isProgress())
+            setProgress(ERROR_STATE_PROGRESS);
     }
 
     public boolean isIdle() {
@@ -878,7 +916,7 @@ public class CircularProgressButton extends Button {
         return new OnAnimationEndListener() {
             @Override
             public void onAnimationEnd() {
-                if(!isCancelled()) {
+                if (!isCancelled()) {
                     mAnimatedDrawable = null;
                     showComplete();
                 }
@@ -922,11 +960,11 @@ public class CircularProgressButton extends Button {
         animator.start();
     }
 
-    public void setOnAnimationUpdateListener(OnAnimationUpdateListener onAnimationUpdateListener) {
-        this.onAnimationUpdateListener = onAnimationUpdateListener;
+    public void setOnAnimationUpdateTimeListener(OnAnimationUpdateTimeListener onAnimationUpdateTimeListener) {
+        this.onAnimationUpdateTimeListener = onAnimationUpdateTimeListener;
     }
 
-    public void setCustomProgress(float customProgress) {
+    public void setCustomProgress(int customProgress) {
         this.customProgress = customProgress;
         if (mAnimatedDrawable != null) {
             mAnimatedDrawable.drawProgress(customProgress);
@@ -935,5 +973,6 @@ public class CircularProgressButton extends Button {
 
     public void setCustomProgressMode(boolean customProgressMode) {
         this.customProgressMode = customProgressMode;
+//        this.mIndeterminateProgressMode = (customProgressMode == true ? true : false);
     }
 }

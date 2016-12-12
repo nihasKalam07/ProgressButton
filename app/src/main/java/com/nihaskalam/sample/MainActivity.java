@@ -10,7 +10,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.nihaskalam.progressbuttonlibrary.CircularProgressButton;
-import com.nihaskalam.progressbuttonlibrary.OnAnimationUpdateListener;
+import com.nihaskalam.progressbuttonlibrary.OnAnimationUpdateTimeListener;
 
 public class MainActivity extends AppCompatActivity {
     private CircularProgressButton circularButton1, circularButton2, circularButton3;
@@ -34,17 +34,18 @@ public class MainActivity extends AppCompatActivity {
         circularButton2 = (CircularProgressButton) findViewById(R.id.circularButton2);
         circularButton2.setIndeterminateProgressMode(false);
         circularButton2.setStrokeColor(ContextCompat.getColor(this, R.color.colorStroke));
-        int duration = 3000;
+        int duration = 5000;
         final int factor = duration / 100;
         circularButton2.setCustomSweepDuration(duration);
         percentageTV = (TextView) findViewById(R.id.timeTV);
-        circularButton2.setOnAnimationUpdateListener(new OnAnimationUpdateListener() {
+        circularButton2.setOnAnimationUpdateTimeListener(new OnAnimationUpdateTimeListener() {
             @Override
-            public void onAnimationTimeUpdate(int time) {
-
-                percentageTV.setText(String.format("%s : %s", "Percentage completed", Integer.toString(time / factor)));
+            public void onAnimationTimeUpdate(int timeElapsed) {
+                percentageTV.setText(String.format("%s : %s", "Percentage completed", Integer.toString(timeElapsed / factor)));
             }
         });
+
+
 
         circularButton3 = (CircularProgressButton) findViewById(R.id.circularButton3);
         circularButton3.setIndeterminateProgressMode(false);

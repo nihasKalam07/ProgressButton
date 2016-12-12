@@ -2,6 +2,7 @@ package com.nihaskalam.progressbuttonlibrary;
 
 public interface OnAnimationUpdateListener {
 
-    void onAnimationTimeUpdate(int time);
+    void onAnimationValueUpdate(float value);
+    void onAnimationTimeUpdate(int timeElapsed, int totalDuration);
 }
 

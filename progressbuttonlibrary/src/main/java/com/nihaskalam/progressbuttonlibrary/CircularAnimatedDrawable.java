@@ -24,6 +24,7 @@ class CircularAnimatedDrawable extends Drawable implements Animatable {
     private static final int SWEEP_ANIMATOR_DURATION = 800;
     public static final int MIN_SWEEP_ANGLE = 30;
     private static final float ANGLE_MULTIPLIER = 3.6f;
+    public static final int DURATION_INSTANT = 1;
     private final RectF fBounds = new RectF();
 
     private ObjectAnimator mObjectAnimatorSweep;
@@ -38,12 +39,13 @@ class CircularAnimatedDrawable extends Drawable implements Animatable {
     private boolean mIndeterminateProgressMode;
     private OnAnimationEndListener mListener;
     private int mCustomSweepDuration;
-    private OnAnimationUpdateListener onAnimationUpdateListener;
+    //    private OnAnimationTimeUpdateListener onAnimationTimeUpdateListener;
     private float cancelButtonSpokeLength;
     private float maxAngle = 360f;
     private float minAngle = 0f;
     private boolean customProgressMode = false;
     private float customProgress = -1;
+    private OnAnimationUpdateListener onAnimationUpdateListener;
 
     public CircularAnimatedDrawable(int color, float borderWidth, boolean indeterminateProgressMode) {
         mBorderWidth = borderWidth;
@@ -127,9 +129,12 @@ class CircularAnimatedDrawable extends Drawable implements Animatable {
 
         @Override
         public void set(CircularAnimatedDrawable object, Float value) {
+            if (onAnimationUpdateListener != null)
+                onAnimationUpdateListener.onAnimationValueUpdate(value);
             object.setCurrentSweepAngle(value);
         }
     };
+
     public void initAnimations() {
         setupAnimations(customProgressMode ? minAngle : maxAngle);
     }
@@ -158,7 +163,7 @@ class CircularAnimatedDrawable extends Drawable implements Animatable {
 
             @Override
             public void onAnimationEnd(Animator animation) {
-                if(customProgressMode) {
+                if (customProgressMode) {
                     if (customProgress != 360) {
                         return;
                     }
@@ -183,8 +188,11 @@ class CircularAnimatedDrawable extends Drawable implements Animatable {
         mObjectAnimatorSweep.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                if (customProgressMode) {
+                    return;
+                }
                 if (onAnimationUpdateListener != null)
-                    onAnimationUpdateListener.onAnimationTimeUpdate((int) valueAnimator.getCurrentPlayTime());
+                    onAnimationUpdateListener.onAnimationTimeUpdate((int) valueAnimator.getCurrentPlayTime(), mCustomSweepDuration);
 
             }
         });
@@ -231,6 +239,14 @@ class CircularAnimatedDrawable extends Drawable implements Animatable {
         invalidateSelf();
     }
 
+    public void setCurrentSweepAngleAndTimeRemaining(float currentSweepAngle, int timeRemaining) {
+        mCurrentSweepAngle = currentSweepAngle;
+        mCustomSweepDuration = timeRemaining;
+        stop();
+        initAnimations();
+        start();
+    }
+
     public float getCurrentSweepAngle() {
         return mCurrentSweepAngle;
     }
@@ -239,16 +255,26 @@ class CircularAnimatedDrawable extends Drawable implements Animatable {
         mListener = listener;
     }
 
-    public void setOnAnimationUpdateListener(OnAnimationUpdateListener onAnimationUpdateListener) {
-        this.onAnimationUpdateListener = onAnimationUpdateListener;
-    }
+//    public void setOnAnimationTimeUpdateListener(OnAnimationTimeUpdateListener onAnimationTimeUpdateListener) {
+//        this.onAnimationTimeUpdateListener = onAnimationTimeUpdateListener;
+//    }
 
-    public void drawProgress(float angle) {
+    public void drawProgress(int angle) {
         stop();
         customProgress = angle * ANGLE_MULTIPLIER > maxAngle ? angle * ANGLE_MULTIPLIER - maxAngle : angle * ANGLE_MULTIPLIER;
         setupAnimations(customProgress);
         start();
     }
+
+    public void drawProgress(float angle) {
+        stop();
+        customProgress = angle;
+        mCustomSweepDuration = DURATION_INSTANT;
+        setupAnimations(customProgress);
+        start();
+        mCustomSweepDuration = -1;
+    }
+
 
     public void setCustomProgressMode(boolean customProgressMode) {
         this.customProgressMode = customProgressMode;
@@ -256,5 +282,9 @@ class CircularAnimatedDrawable extends Drawable implements Animatable {
 
     public void setmCustomSweepDuration(int mCustomSweepDuration) {
         this.mCustomSweepDuration = mCustomSweepDuration;
+    }
+
+    public void setOnAnimationUpdateListener(OnAnimationUpdateListener onAnimationUpdateListener) {
+        this.onAnimationUpdateListener = onAnimationUpdateListener;
     }
 }
