@@ -916,7 +916,7 @@ public class CircularProgressButton extends Button implements OnAnimationUpdateL
     }
 
     public boolean isProgress() {
-        return ((getProgress() != SUCCESS_STATE_PROGRESS && getProgress() != ERROR_STATE_PROGRESS && getProgress() != IDLE_STATE_PROGRESS) ? true : false);
+        return ((getProgress() != SUCCESS_STATE_PROGRESS && getProgress() != ERROR_STATE_PROGRESS && getProgress() != IDLE_STATE_PROGRESS && getProgress() != CANCEL_STATE_PROGRESS) ? true : false);
     }
 
     public boolean isCancelled() {

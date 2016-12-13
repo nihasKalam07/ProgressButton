@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.nihaskalam.progressbuttonlibrary.CircularProgressButton;
 import com.nihaskalam.progressbuttonlibrary.OnAnimationUpdateTimeListener;
@@ -104,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void setProgress(View view) {
         if (!circularButton3.isProgress()){
+            Toast.makeText(MainActivity.this, "Do after submit button click", Toast.LENGTH_LONG).show();
             return;
         }
         if (progress >= 100) {
