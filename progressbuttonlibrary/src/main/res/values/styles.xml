@@ -21,6 +21,7 @@
         <attr name="pb_selectorCancel" format="reference"/>
         <attr name="pb_iconCancel" format="reference"/>
         <attr name="pb_textCancel" format="string"/>
+        <attr name="pb_colorCancel" format="color"/>
     </declare-styleable>
 
 </resources>

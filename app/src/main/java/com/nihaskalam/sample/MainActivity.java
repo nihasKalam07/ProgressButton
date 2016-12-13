@@ -2,7 +2,6 @@ package com.nihaskalam.sample;
 
 import android.app.ActionBar;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -13,7 +12,7 @@ import com.nihaskalam.progressbuttonlibrary.CircularProgressButton;
 import com.nihaskalam.progressbuttonlibrary.OnAnimationUpdateTimeListener;
 
 public class MainActivity extends AppCompatActivity {
-    private CircularProgressButton circularButton1, circularButton2, circularButton3;
+    private CircularProgressButton circularButton1, circularButton2, circularButton3, circularButton4, circularButton5;
     private Button setProgressBtn;
     private int progress = 0;
     private TextView percentageTV, progressAmountTV;
@@ -55,6 +54,14 @@ public class MainActivity extends AppCompatActivity {
         setProgressBtn = (Button) findViewById(R.id.button);
 
         progressAmountTV = (TextView) findViewById(R.id.progressAmountTV);
+
+        circularButton4 = (CircularProgressButton) findViewById(R.id.circularButton4);
+        circularButton4.setIndeterminateProgressMode(true);
+        circularButton4.setStrokeColor(ContextCompat.getColor(this, R.color.colorStroke));
+
+        circularButton5 = (CircularProgressButton) findViewById(R.id.circularButton5);
+        circularButton5.setIndeterminateProgressMode(true);
+        circularButton5.setStrokeColor(ContextCompat.getColor(this, R.color.colorStroke));
     }
 
     public void onClickFirstBtn(View view) {
@@ -66,14 +73,6 @@ public class MainActivity extends AppCompatActivity {
         } else if (circularButton1.isProgress()) {
             circularButton1.showCancel();
         }
-
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                circularButton1.showComplete();
-            }
-        }, 10000);
     }
 
     public void onClickSecondBtn(View view) {
@@ -90,7 +89,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onClickThirdBtn(View view) {
-
+        progress = 0;
+        setProgressText();
         if (circularButton3.isIdle()) {
             circularButton3.showProgress();
         } else if (circularButton3.isErrorOrCompleteOrCancelled()) {
@@ -112,6 +112,32 @@ public class MainActivity extends AppCompatActivity {
             progress += 25;
         }
         circularButton3.setCustomProgress(progress);
+        setProgressText();
+    }
+
+    public void setProgressText() {
         progressAmountTV.setText(String.format("%s : %s", "Progress completed", Integer.toString(progress)));
+    }
+
+    public void onClickFourthBtn(View view) {
+        if (circularButton4.isIdle()) {
+            circularButton4.showProgress();
+        } else if (circularButton4.isErrorOrCompleteOrCancelled()) {
+            circularButton4.showIdle();
+        } else if (circularButton4.isProgress()) {
+            circularButton4.showComplete();
+        }
+
+    }
+
+    public void onClickFifthBtn(View view) {
+        if (circularButton5.isIdle()) {
+            circularButton5.showProgress();
+        } else if (circularButton5.isErrorOrCompleteOrCancelled()) {
+            circularButton5.showIdle();
+        } else if (circularButton5.isProgress()) {
+            circularButton5.showError();
+        }
+
     }
 }

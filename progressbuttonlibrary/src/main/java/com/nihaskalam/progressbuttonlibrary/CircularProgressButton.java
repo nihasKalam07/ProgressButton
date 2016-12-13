@@ -54,6 +54,7 @@ public class CircularProgressButton extends Button implements OnAnimationUpdateL
     private int mColorProgress;
     private int mColorIndicator;
     private int mColorIndicatorBackground;
+    private int mColorCancel;
     private int mIconComplete;
     private int mIconError;
     private int mIconCancel;
@@ -270,6 +271,7 @@ public class CircularProgressButton extends Button implements OnAnimationUpdateL
 
             mColorProgress = attr.getColor(R.styleable.CircularProgressButton_pb_colorProgress, white);
             mColorIndicator = attr.getColor(R.styleable.CircularProgressButton_pb_colorIndicator, blue);
+            mColorCancel = attr.getColor(R.styleable.CircularProgressButton_pb_colorCancel, mColorIndicator);
             mColorIndicatorBackground =
                     attr.getColor(R.styleable.CircularProgressButton_pb_colorIndicatorBackground, grey);
             mIdleStateTextColorAfterClick = attr.getColor(R.styleable.CircularProgressButton_pb_textColorAfterClick, getNormalColor(mIdleColorState));
@@ -278,7 +280,6 @@ public class CircularProgressButton extends Button implements OnAnimationUpdateL
             } else {
                 mIdleStateBackgroundColorAfterClick = attr.getColor(R.styleable.CircularProgressButton_pb_backgroundColorAfterClick, getPressedColor(mIdleColorState));
             }
-//            mStrokeWidth = attr.getInteger(R.styleable.CircularProgressButton_pb_strokeWidth, (int)getContext().getResources().getDimension(R.dimen.pb_stroke_width));
 
         } finally {
             attr.recycle();
@@ -305,11 +306,11 @@ public class CircularProgressButton extends Button implements OnAnimationUpdateL
     private void drawProgress(Canvas canvas) {
         if (mAnimatedDrawable == null) {
             int offset = (getWidth() - getHeight()) / 2;
-            mAnimatedDrawable = new CircularAnimatedDrawable(mColorIndicator, mStrokeWidth, mIndeterminateProgressMode);
+            mAnimatedDrawable = new CircularAnimatedDrawable(mColorIndicator, mColorCancel, mStrokeWidth);
             mAnimatedDrawable.setmCustomSweepDuration(customSweepDuration);
+            mAnimatedDrawable.setmIndeterminateProgressMode(mIndeterminateProgressMode);
             if (!mIndeterminateProgressMode) {
                 mAnimatedDrawable.setListener(getDeterminateProgressBarCompleteStateListener());
-//                mAnimatedDrawable.setOnAnimationTimeUpdateListener(onAnimationUpdateTimeListener);
                 mAnimatedDrawable.setOnAnimationUpdateListener(this);
                 if (mRemainingTime > 0)
                     mAnimatedDrawable.setCurrentSweepAngleAndTimeRemaining(mCurrentSweepAngle, mRemainingTime);
@@ -400,9 +401,8 @@ public class CircularProgressButton extends Button implements OnAnimationUpdateL
             animateIdleStateButtonAfterClick();
             duration = IDLE_STATE_ANIMATION_DURATION_AFTER_CLICK;
         }
-//        mConfigurationChanged = false;
 
-        final Handler handler = new Handler();
+        Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -873,8 +873,11 @@ public class CircularProgressButton extends Button implements OnAnimationUpdateL
     public void showComplete() {
         mCurrentSweepAngle = -1;
         mRemainingTime = -1;
-        if (mAnimatedDrawable != null)
+        customProgress = -1;
+        if (mAnimatedDrawable != null) {
             mAnimatedDrawable.stop();
+            setCustomProgress(0);
+        }
         if (isProgress())
             setProgress(SUCCESS_STATE_PROGRESS);
     }
@@ -882,16 +885,22 @@ public class CircularProgressButton extends Button implements OnAnimationUpdateL
     public void showCancel() {
         mCurrentSweepAngle = -1;
         mRemainingTime = -1;
+        customProgress = -1;
         setProgress(CANCEL_STATE_PROGRESS);
-        if (mAnimatedDrawable != null)
+        if (mAnimatedDrawable != null) {
             mAnimatedDrawable.stop();
+            setCustomProgress(0);
+        }
     }
 
     public void showError() {
         mCurrentSweepAngle = -1;
         mRemainingTime = -1;
-        if (mAnimatedDrawable != null)
+        customProgress = -1;
+        if (mAnimatedDrawable != null) {
             mAnimatedDrawable.stop();
+            setCustomProgress(0);
+        }
         if (isProgress())
             setProgress(ERROR_STATE_PROGRESS);
     }
@@ -965,6 +974,8 @@ public class CircularProgressButton extends Button implements OnAnimationUpdateL
     }
 
     public void setCustomProgress(int customProgress) {
+        if (!customProgressMode)
+            return;
         this.customProgress = customProgress;
         if (mAnimatedDrawable != null) {
             mAnimatedDrawable.drawProgress(customProgress);
@@ -973,6 +984,5 @@ public class CircularProgressButton extends Button implements OnAnimationUpdateL
 
     public void setCustomProgressMode(boolean customProgressMode) {
         this.customProgressMode = customProgressMode;
-//        this.mIndeterminateProgressMode = (customProgressMode == true ? true : false);
     }
 }
