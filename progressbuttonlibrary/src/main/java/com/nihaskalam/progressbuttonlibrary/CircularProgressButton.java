@@ -400,7 +400,7 @@ public class CircularProgressButton extends Button implements OnAnimationUpdateL
             animateIdleStateButtonAfterClick();
             duration = IDLE_STATE_ANIMATION_DURATION_AFTER_CLICK;
         }
-        mConfigurationChanged = false;
+//        mConfigurationChanged = false;
 
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
