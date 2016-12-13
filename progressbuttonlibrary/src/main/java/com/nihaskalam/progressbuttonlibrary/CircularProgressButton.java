@@ -860,20 +860,20 @@ public class CircularProgressButton extends Button implements OnAnimationUpdateL
     }
 
     public void showProgress() {
+        mConfigurationChanged = false;
         if (getProgress() == IDLE_STATE_PROGRESS) {
             setProgress(INDETERMINATE_STATE_PROGRESS);
         }
     }
 
     public void showIdle() {
+        mConfigurationChanged = false;
         if (getProgress() == SUCCESS_STATE_PROGRESS || getProgress() == ERROR_STATE_PROGRESS || getProgress() == CANCEL_STATE_PROGRESS)
             setProgress(IDLE_STATE_PROGRESS);
     }
 
     public void showComplete() {
-        mCurrentSweepAngle = -1;
-        mRemainingTime = -1;
-        customProgress = -1;
+        setDefaults();
         if (mAnimatedDrawable != null) {
             mAnimatedDrawable.stop();
             setCustomProgress(0);
@@ -883,9 +883,7 @@ public class CircularProgressButton extends Button implements OnAnimationUpdateL
     }
 
     public void showCancel() {
-        mCurrentSweepAngle = -1;
-        mRemainingTime = -1;
-        customProgress = -1;
+        setDefaults();
         setProgress(CANCEL_STATE_PROGRESS);
         if (mAnimatedDrawable != null) {
             mAnimatedDrawable.stop();
@@ -894,15 +892,19 @@ public class CircularProgressButton extends Button implements OnAnimationUpdateL
     }
 
     public void showError() {
-        mCurrentSweepAngle = -1;
-        mRemainingTime = -1;
-        customProgress = -1;
+        setDefaults();
         if (mAnimatedDrawable != null) {
             mAnimatedDrawable.stop();
             setCustomProgress(0);
         }
         if (isProgress())
             setProgress(ERROR_STATE_PROGRESS);
+    }
+    private void setDefaults(){
+        mConfigurationChanged = false;
+        mCurrentSweepAngle = -1;
+        mRemainingTime = -1;
+        customProgress = -1;
     }
 
     public boolean isIdle() {
