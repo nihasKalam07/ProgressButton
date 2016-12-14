@@ -1,5 +1,4 @@
 
-<img src="https://github.com/nihasKalam07/ProgressButton/blob/master/screenshots/Screenshot1_framed.png" width="350px" height="600px" /> <img src="https://github.com/nihasKalam07/ProgressButton/blob/master/screenshots/Screenshot_framed.png" width="350px" height="600px" />
 # User Guide
 
 ## Version 1.0.0
@@ -198,10 +197,3 @@ You can use the same color of stroke of button for better looking and animations
 ### You can set text color of button after clicking the idle state button
 
 `app:pb_textColorAfterClick="@color/textColor"`
-
-
-
-
-
-
-           
