@@ -1,4 +1,3 @@
-
 # User Guide
 
 ## Version 1.0.0
@@ -91,7 +90,7 @@ Button will be morphed to a circular progressbar
 
 ```
 CircularProgressButton.setIndeterminateProgressMode(false)
-CircularProgressButton.setCustomSweepDuration(time)
+CircularProgressButton.setSweepDuration(time)
 ```
 You can set listener to get the time update for the fixed time progressbar
 ```
