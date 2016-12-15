@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         circularButton2.setStrokeColor(ContextCompat.getColor(this, R.color.colorStroke));
         int duration = 5000;
         final int factor = duration / 100;
-        circularButton2.setCustomSweepDuration(duration);
+        circularButton2.setSweepDuration(duration);
         percentageTV = (TextView) findViewById(R.id.timeTV);
         circularButton2.setOnAnimationUpdateTimeListener(new OnAnimationUpdateTimeListener() {
             @Override

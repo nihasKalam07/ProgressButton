@@ -23,6 +23,7 @@
             android:id="@+id/circularButton1"
             android:layout_width="196dp"
             android:layout_height="64dp"
+            android:layout_marginTop="16dp"
             android:onClick="onClickFirstBtn"
             android:textColor="@color/text_state_selector"
             android:textSize="22sp"
@@ -36,8 +37,7 @@
             app:pb_selectorError="@color/error_state_selector"
             app:pb_selectorIdle="@color/idle_state_selector"
             app:pb_textColorAfterClick="@color/colorWhite"
-            app:pb_textIdle="@string/submit"
-            android:layout_marginTop="16dp"/>
+            app:pb_textIdle="@string/submit" />
 
         <com.nihaskalam.progressbuttonlibrary.CircularProgressButton
             android:id="@+id/circularButton4"
@@ -57,7 +57,7 @@
             app:pb_selectorError="@color/error_state_selector"
             app:pb_selectorIdle="@color/idle_state_selector"
             app:pb_textColorAfterClick="@color/colorWhite"
-            app:pb_textIdle="@string/submit" />
+            app:pb_textIdle="@string/submit"/>
 
         <com.nihaskalam.progressbuttonlibrary.CircularProgressButton
             android:id="@+id/circularButton5"
@@ -164,7 +164,7 @@
             android:layout_marginTop="16dp"
             android:onClick="setProgress"
             android:text="DoProgress"
-            android:textAllCaps="false"/>
+            android:textAllCaps="false" />
 
 
     </LinearLayout>

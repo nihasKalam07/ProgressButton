@@ -747,7 +747,7 @@ public class CircularProgressButton extends Button implements OnAnimationUpdateL
         idleStateStrokeColor = color;
     }
 
-    public void setCustomSweepDuration(int duration) {
+    public void setSweepDuration(int duration) {
         customSweepDuration = duration;
     }
 
