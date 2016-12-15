@@ -1,3 +1,5 @@
+<img src="https://github.com/nihasKalam07/ProgressButton/blob/master/screenshots/Screenshot1_framed.png" width="350px" height="600px" /> <img src="https://github.com/nihasKalam07/ProgressButton/blob/master/screenshots/Screenshot_framed.png" width="350px" height="600px" />
+
 # User Guide
 
 ## Version 1.0.0
@@ -91,6 +93,7 @@ Button will be morphed to a circular progressbar
 ```
 CircularProgressButton.setIndeterminateProgressMode(false)
 CircularProgressButton.setSweepDuration(time)
+
 ```
 You can set listener to get the time update for the fixed time progressbar
 ```
