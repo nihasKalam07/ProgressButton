@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:id="@+id/parentSV">
 
     <LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
@@ -37,7 +38,8 @@
             app:pb_selectorError="@color/error_state_selector"
             app:pb_selectorIdle="@color/idle_state_selector"
             app:pb_textColorAfterClick="@color/colorWhite"
-            app:pb_textIdle="@string/submit" />
+            app:pb_textIdle="@string/submit"
+            android:contentDescription=""/>
 
         <com.nihaskalam.progressbuttonlibrary.CircularProgressButton
             android:id="@+id/circularButton4"
@@ -163,7 +165,7 @@
             android:layout_height="60dp"
             android:layout_marginTop="16dp"
             android:onClick="setProgress"
-            android:text="DoProgress"
+            android:text="@string/doProgress"
             android:textAllCaps="false" />
 
 

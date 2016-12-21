@@ -37,5 +37,6 @@ public class ExampleInstrumentedTest {
         Context appContext = InstrumentationRegistry.getTargetContext();
 
         assertEquals("com.nihaskalam.sample", appContext.getPackageName());
+
     }
 }

@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private Button setProgressBtn;
     private int progress = 0;
     private TextView percentageTV, progressAmountTV;
+    public static final int sweepDuration = 5000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,9 +50,8 @@ public class MainActivity extends AppCompatActivity {
         circularButton2 = (CircularProgressButton) findViewById(R.id.circularButton2);
         circularButton2.setIndeterminateProgressMode(false);
         circularButton2.setStrokeColor(ContextCompat.getColor(this, R.color.colorStroke));
-        int duration = 5000;
-        final int factor = duration / 100;
-        circularButton2.setSweepDuration(duration);
+        final int factor = sweepDuration / 100;
+        circularButton2.setSweepDuration(sweepDuration);
         percentageTV = (TextView) findViewById(R.id.timeTV);
         circularButton2.setOnAnimationUpdateTimeListener(new OnAnimationUpdateTimeListener() {
             @Override
