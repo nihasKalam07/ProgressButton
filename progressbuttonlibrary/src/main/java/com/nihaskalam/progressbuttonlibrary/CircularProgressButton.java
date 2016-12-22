@@ -31,12 +31,14 @@ import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.AppCompatButton;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.StateSet;
 import android.view.animation.BounceInterpolator;
 import android.widget.Button;
 
-public class CircularProgressButton extends Button implements OnAnimationUpdateListener {
+public class CircularProgressButton extends AppCompatButton implements OnAnimationUpdateListener {
 
     public static final int IDLE_STATE_PROGRESS = 0;
     public static final int ERROR_STATE_PROGRESS = -1;
@@ -69,7 +71,7 @@ public class CircularProgressButton extends Button implements OnAnimationUpdateL
     private int mColorProgress;
     private int mColorIndicator;
     private int mColorIndicatorBackground;
-    private int mColorCancel;
+    private int mColorProgressCancelIcon;
     private int mIconComplete;
     private int mIconError;
     private int mIconCancel;
@@ -88,6 +90,7 @@ public class CircularProgressButton extends Button implements OnAnimationUpdateL
     private boolean customProgressMode = false;
     private float mCurrentSweepAngle = -1;
     private int mRemainingTime = -1;
+    private int mColorCancelText, mColorCompleteText, mColorErrorText, mColorIdleText;
 
     private enum State {
         PROGRESS, IDLE, COMPLETE, ERROR, CANCEL
@@ -286,7 +289,7 @@ public class CircularProgressButton extends Button implements OnAnimationUpdateL
 
             mColorProgress = attr.getColor(R.styleable.CircularProgressButton_pb_colorProgress, white);
             mColorIndicator = attr.getColor(R.styleable.CircularProgressButton_pb_colorIndicator, blue);
-            mColorCancel = attr.getColor(R.styleable.CircularProgressButton_pb_colorCancel, mColorIndicator);
+            mColorProgressCancelIcon = attr.getColor(R.styleable.CircularProgressButton_pb_colorProgressCancelIcon, mColorIndicator);
             mColorIndicatorBackground =
                     attr.getColor(R.styleable.CircularProgressButton_pb_colorIndicatorBackground, grey);
             mIdleStateTextColorAfterClick = attr.getColor(R.styleable.CircularProgressButton_pb_textColorAfterClick, getNormalColor(mIdleColorState));
@@ -295,7 +298,10 @@ public class CircularProgressButton extends Button implements OnAnimationUpdateL
             } else {
                 mIdleStateBackgroundColorAfterClick = attr.getColor(R.styleable.CircularProgressButton_pb_backgroundColorAfterClick, getPressedColor(mIdleColorState));
             }
-
+            mColorCancelText = attr.getColor(R.styleable.CircularProgressButton_pb_colorCancelText, getNormalColor(this.getTextColors()));
+            mColorCompleteText = attr.getColor(R.styleable.CircularProgressButton_pb_colorCompleteText, getNormalColor(this.getTextColors()));
+            mColorErrorText = attr.getColor(R.styleable.CircularProgressButton_pb_colorErrorText, getNormalColor(this.getTextColors()));
+            mColorIdleText = getNormalColor(this.getTextColors());
         } finally {
             attr.recycle();
         }
@@ -321,7 +327,7 @@ public class CircularProgressButton extends Button implements OnAnimationUpdateL
     private void drawProgress(Canvas canvas) {
         if (mAnimatedDrawable == null) {
             int offset = (getWidth() - getHeight()) / 2;
-            mAnimatedDrawable = new CircularAnimatedDrawable(mColorIndicator, mColorCancel, mStrokeWidth);
+            mAnimatedDrawable = new CircularAnimatedDrawable(mColorIndicator, mColorProgressCancelIcon, mStrokeWidth);
             mAnimatedDrawable.setmCustomSweepDuration(customSweepDuration);
             mAnimatedDrawable.setmIndeterminateProgressMode(mIndeterminateProgressMode);
             if (!mIndeterminateProgressMode) {
@@ -460,7 +466,7 @@ public class CircularProgressButton extends Button implements OnAnimationUpdateL
 
         animation.setFromStrokeColor(mColorIndicator);
         animation.setToStrokeColor(getNormalColor(mCompleteColorState));
-
+        animation.setTextColor(mColorCompleteText);
         animation.setListener(getCompleteStateListener());
 
         animation.start();
@@ -475,7 +481,7 @@ public class CircularProgressButton extends Button implements OnAnimationUpdateL
 
         animation.setFromStrokeColor(mColorIndicator);
         animation.setToStrokeColor(getNormalColor(mCancelColorState));
-
+        animation.setTextColor(mColorCancelText);
         animation.setListener(getCancelStateListener());
 
         animation.start();
@@ -490,7 +496,7 @@ public class CircularProgressButton extends Button implements OnAnimationUpdateL
 
         animation.setFromStrokeColor(getNormalColor(mIdleColorState));
         animation.setToStrokeColor(getNormalColor(mCompleteColorState));
-
+        animation.setTextColor(mColorCompleteText);
         animation.setListener(getCompleteStateListener());
 
         animation.start();
@@ -505,7 +511,7 @@ public class CircularProgressButton extends Button implements OnAnimationUpdateL
 
         animation.setFromStrokeColor(getNormalColor(mIdleColorState));
         animation.setToStrokeColor(getNormalColor(mCancelColorState));
-
+        animation.setTextColor(mColorCancelText);
         animation.setListener(getCancelStateListener());
 
         animation.start();
@@ -556,7 +562,7 @@ public class CircularProgressButton extends Button implements OnAnimationUpdateL
 
         animation.setFromStrokeColor(getNormalColor(mCompleteColorState));
         animation.setToStrokeColor(idleStateStrokeColor == -1 ? getNormalColor(mIdleColorState) : idleStateStrokeColor);
-
+        animation.setTextColor(mColorIdleText);
         animation.setListener(getIdleStateListener());
 
         animation.start();
@@ -571,7 +577,7 @@ public class CircularProgressButton extends Button implements OnAnimationUpdateL
 
         animation.setFromStrokeColor(getNormalColor(mCancelColorState));
         animation.setToStrokeColor(idleStateStrokeColor == -1 ? getNormalColor(mIdleColorState) : idleStateStrokeColor);
-
+        animation.setTextColor(mColorIdleText);
         animation.setListener(getIdleStateListener());
 
         animation.start();
@@ -586,7 +592,7 @@ public class CircularProgressButton extends Button implements OnAnimationUpdateL
 
         animation.setFromStrokeColor(getNormalColor(mErrorColorState));
         animation.setToStrokeColor(idleStateStrokeColor == -1 ? getNormalColor(mIdleColorState) : idleStateStrokeColor);
-
+        animation.setTextColor(mColorIdleText);
         animation.setListener(getIdleStateListener());
 
         animation.start();
@@ -615,7 +621,7 @@ public class CircularProgressButton extends Button implements OnAnimationUpdateL
 
         animation.setFromStrokeColor(getNormalColor(mIdleColorState));
         animation.setToStrokeColor(getNormalColor(mErrorColorState));
-
+        animation.setTextColor(mColorErrorText);
         animation.setListener(getErrorStateListener());
 
         animation.start();
@@ -630,8 +636,8 @@ public class CircularProgressButton extends Button implements OnAnimationUpdateL
 
         animation.setFromStrokeColor(mColorIndicator);
         animation.setToStrokeColor(getNormalColor(mErrorColorState));
+        animation.setTextColor(mColorErrorText);
         animation.setListener(getErrorStateListener());
-
         animation.start();
     }
 
@@ -658,7 +664,7 @@ public class CircularProgressButton extends Button implements OnAnimationUpdateL
 
         animation.setFromColor(mColorProgress);
         animation.setToColor(getNormalColor(mIdleColorState));
-
+        animation.setTextColor(mColorIdleText);
         animation.setFromStrokeColor(mColorIndicator);
         animation.setToStrokeColor(getNormalColor(mIdleColorState));
         animation.setListener(new OnAnimationEndListener() {
@@ -915,7 +921,8 @@ public class CircularProgressButton extends Button implements OnAnimationUpdateL
         if (isProgress())
             setProgress(ERROR_STATE_PROGRESS);
     }
-    private void setDefaults(){
+
+    private void setDefaults() {
         mConfigurationChanged = false;
         mCurrentSweepAngle = -1;
         mRemainingTime = -1;

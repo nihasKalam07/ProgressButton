@@ -21,7 +21,10 @@
         <attr name="pb_selectorCancel" format="reference"/>
         <attr name="pb_iconCancel" format="reference"/>
         <attr name="pb_textCancel" format="string"/>
-        <attr name="pb_colorCancel" format="color"/>
+        <attr name="pb_colorProgressCancelIcon" format="color"/>
+        <attr name="pb_colorCancelText" format="color"/>
+        <attr name="pb_colorCompleteText" format="color"/>
+        <attr name="pb_colorErrorText" format="color"/>
     </declare-styleable>
 
 </resources>

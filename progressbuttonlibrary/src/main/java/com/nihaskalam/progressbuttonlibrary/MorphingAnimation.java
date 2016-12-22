@@ -52,6 +52,7 @@ class MorphingAnimation {
 
     private TextView mView;
     private StrokeGradientDrawable mDrawable;
+    private int mTextColor;
 
     public MorphingAnimation(TextView viewGroup, StrokeGradientDrawable drawable) {
         mView = viewGroup;
@@ -102,7 +103,12 @@ class MorphingAnimation {
         mPadding = padding;
     }
 
+    public void setTextColor(int textColor) {
+        this.mTextColor = textColor;
+    }
+
     public void start() {
+        mView.setTextColor(mTextColor);
         ValueAnimator widthAnimation = ValueAnimator.ofInt(mFromWidth, mToWidth);
         final GradientDrawable gradientDrawable = mDrawable.getGradientDrawable();
         widthAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
