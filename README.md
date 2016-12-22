@@ -37,7 +37,10 @@ Declare button inside your layout XML file:
             app:pb_selectorError="@color/error_state_selector"
             app:pb_selectorIdle="@color/idle_state_selector"
             app:pb_textColorAfterClick="@color/colorWhite"
-            app:pb_textIdle="@string/submit" />
+            app:pb_textIdle="@string/submit"
+            app:pb_colorCancelText="@color/pb_orange"
+            app:pb_colorErrorText="@color/pb_blue"
+            app:pb_colorCompleteText="@color/pb_orange"/>
 ```
 
 Different button states are:
@@ -128,6 +131,7 @@ Progress amount can be any value between 0-100. For instance, 0 for empty state,
 `CircularProgressButton.showComplete()`
 
 - To change text `app:pb_textComplete="@string/Complete"`
+- To change complete state text color `app:pb_colorCompleteText="@color/pb_orange"`
 - To change background color create color state selector and point to it with `app:pb_selectorComplete="@drawable/complete_state_selector"` attribute.
 ```
 <?xml version="1.0" encoding="utf-8"?>
@@ -144,8 +148,9 @@ Progress amount can be any value between 0-100. For instance, 0 for empty state,
 
 `CircularProgressButton.showError()`
 
-To change text `app:pb_textError="@string/Error"`
-To change background color create color state selector and point to it with `app:pb_selectorError="@drawable/error_state_selector"` attribute.
+- To change text `app:pb_textError="@string/Error"`
+- To change error state text color `app:pb_colorErrorText="@color/pb_blue"`
+- To change background color create color state selector and point to it with `app:pb_selectorError="@drawable/error_state_selector"` attribute.
 ```
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
@@ -161,8 +166,9 @@ To change background color create color state selector and point to it with `app
 
 `CircularProgressButton.showCancel()`
 
-To change text `app:pb_textCancel=""="@string/cancel"`
-To change background color create color state selector and point to it with `app:pb_selectorCancel="@color/pb_cancel_state_selector"` attribute.
+- To change text `app:pb_textCancel=""="@string/cancel"`
+- To change cancelled state text color `app:pb_colorCancelText="@color/pb_orange"`
+- To change background color create color state selector and point to it with `app:pb_selectorCancel="@color/pb_cancel_state_selector"` attribute.
 ```
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">

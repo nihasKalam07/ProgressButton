@@ -39,7 +39,10 @@
             app:pb_selectorIdle="@color/idle_state_selector"
             app:pb_textColorAfterClick="@color/colorWhite"
             app:pb_textIdle="@string/submit"
-            android:contentDescription=""/>
+            android:contentDescription=""
+            app:pb_colorCancelText="@color/pb_orange"
+            app:pb_colorErrorText="@color/pb_blue"
+            app:pb_colorCompleteText="@color/pb_orange"/>
 
         <com.nihaskalam.progressbuttonlibrary.CircularProgressButton
             android:id="@+id/circularButton4"
