@@ -33,6 +33,11 @@ public class MainActivity extends AppCompatActivity {
     private int progress = 0;
     private TextView percentageTV, progressAmountTV;
     public static final int sweepDuration = 5000;
+    private static final String MANUAL_PROGRESS_AMOUNT_KEY = "manualProgressAmount";
+    private static final String FIXED_PROGRESS_PERCENTAGE_KEY = "fixedTimeProgressPercentage";
+    private static final String CONFIGURATION_CHANGE_KEY = "configurationChange";
+    private int fixedTimeProgressPercentage = 0;
+    private boolean hasConfigurarationChanged = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +61,9 @@ public class MainActivity extends AppCompatActivity {
         circularButton2.setOnAnimationUpdateTimeListener(new OnAnimationUpdateTimeListener() {
             @Override
             public void onAnimationTimeUpdate(int timeElapsed) {
-                percentageTV.setText(String.format("%s : %s", "Percentage completed", Integer.toString(timeElapsed / factor)));
+                fixedTimeProgressPercentage = hasConfigurarationChanged ? fixedTimeProgressPercentage + timeElapsed / factor : timeElapsed / factor;
+                percentageTV.setText(String.format("%s : %s", "Percentage completed", Integer.toString(fixedTimeProgressPercentage)));
+                hasConfigurarationChanged = false;
             }
         });
 
@@ -133,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setProgressText() {
-        progressAmountTV.setText(String.format("%s : %s", "Progress completed", Integer.toString(progress)));
+        progressAmountTV.setText(String.format("%s %s", getResources().getString(R.string.progress_amount), Integer.toString(progress)));
     }
 
     public void onClickFourthBtn(View view) {
@@ -156,5 +163,22 @@ public class MainActivity extends AppCompatActivity {
             circularButton5.showError();
         }
 
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(MANUAL_PROGRESS_AMOUNT_KEY, progress);
+        outState.putInt(FIXED_PROGRESS_PERCENTAGE_KEY, fixedTimeProgressPercentage);
+        outState.putBoolean(CONFIGURATION_CHANGE_KEY, true);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        progress = savedInstanceState.getInt(MANUAL_PROGRESS_AMOUNT_KEY);
+        fixedTimeProgressPercentage = savedInstanceState.getInt(FIXED_PROGRESS_PERCENTAGE_KEY);
+        hasConfigurarationChanged = savedInstanceState.getBoolean(CONFIGURATION_CHANGE_KEY);
+        setProgressText();
     }
 }

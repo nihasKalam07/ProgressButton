@@ -16,7 +16,7 @@
 package com.nihaskalam.sample;
 
 /**
- * Created by qbuser on 21/12/16.
+ * Created by Nihas Kalam on 21/12/16.
  */
 
 public class Constants {

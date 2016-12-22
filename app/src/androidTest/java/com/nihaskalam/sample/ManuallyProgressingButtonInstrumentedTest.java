@@ -66,20 +66,15 @@ public class ManuallyProgressingButtonInstrumentedTest {
         Espresso.onView(allOf(withId(R.id.circularButton3), withText(idleStateText)))
                 .perform(click());
         Thread.sleep(Constants.SUBMIT_TO_PROGRESS_MORPH_DURATION);
-        doProgress();
-        doProgress();
-        doProgress();
-        doProgress();
+        Utils.doProgress(doProgressText);
+        Utils.doProgress(doProgressText);
+        Utils.doProgress(doProgressText);
+        Utils.doProgress(doProgressText);
         Thread.sleep(Constants.MORPH_DURATION);
 //         Check the text and compound drawable.
         Espresso.onView(withId(R.id.circularButton3))
                 .check(matches(allOf(withText(emptyString), Utils.withCompoundDrawable(R.drawable.ic_action_accept))));
         Utils.clickAndShowIdleState(idleStateText, R.id.circularButton3);
-    }
-
-    private void doProgress() throws InterruptedException {
-        Espresso.onView(allOf(withId(R.id.button), withText(doProgressText))).perform(click());
-        Thread.sleep(Constants.TIME_GAP_BETWEEN_MANUAL_PROGRESS);
     }
 
     @Test
@@ -89,10 +84,10 @@ public class ManuallyProgressingButtonInstrumentedTest {
         Espresso.onView(allOf(withId(R.id.circularButton3), withText(idleStateText)))
                 .perform(click());
         Thread.sleep(Constants.SUBMIT_TO_PROGRESS_MORPH_DURATION);
-        doProgress();
-        doProgress();
-        doProgress();
-        doProgress();
+        Utils.doProgress(doProgressText);
+        Utils.doProgress(doProgressText);
+        Utils.doProgress(doProgressText);
+        Utils.doProgress(doProgressText);
         Thread.sleep(Constants.MORPH_DURATION);
         // Check the text and compound drawable.
         Espresso.onView(withId(R.id.circularButton3))
@@ -107,8 +102,8 @@ public class ManuallyProgressingButtonInstrumentedTest {
         Espresso.onView(allOf(withId(R.id.circularButton3), withText(idleStateText)))
                 .perform(click());
         Thread.sleep(Constants.SUBMIT_TO_PROGRESS_MORPH_DURATION);
-        doProgress();
-        doProgress();
+        Utils.doProgress(doProgressText);
+        Utils.doProgress(doProgressText);
         Espresso.onView(withId(R.id.circularButton3)).perform(click());
         Thread.sleep(Constants.MORPH_DURATION);
 
@@ -125,8 +120,8 @@ public class ManuallyProgressingButtonInstrumentedTest {
         Espresso.onView(allOf(withId(R.id.circularButton3), withText(idleStateText)))
                 .perform(click());
         Thread.sleep(Constants.SUBMIT_TO_PROGRESS_MORPH_DURATION);
-        doProgress();
-        doProgress();
+        Utils.doProgress(doProgressText);
+        Utils.doProgress(doProgressText);
         Espresso.onView(withId(R.id.circularButton3)).perform(click());
         Thread.sleep(Constants.MORPH_DURATION);
 

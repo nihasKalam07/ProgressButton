@@ -81,6 +81,7 @@ public class IndeterminateProgressCancelStateInstrumentedTest {
     @Test
     public void verifyProgressCycleWithCancelStateIcon() throws InterruptedException {
         // Click submit button.
+
         Espresso.onView(allOf(withId(R.id.circularButton1), withText(idleStateText)))
                 .perform(click());
         Thread.sleep(Constants.INDETERMINATE_PROGRESS_DURATION);

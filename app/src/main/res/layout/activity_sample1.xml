@@ -155,7 +155,7 @@
             android:layout_height="60dp"
             android:layout_marginTop="16dp"
             android:gravity="center"
-            android:text="Progress completed :"
+            android:text="@string/progress_amount"
             android:textColor="@color/colorPrimary"
             android:textSize="20dp" />
 

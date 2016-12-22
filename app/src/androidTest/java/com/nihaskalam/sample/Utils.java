@@ -19,9 +19,10 @@ import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.Matchers.allOf;
 
 /**
- * Created by qbuser on 21/12/16.
+ * Created by Nihas Kalam on 21/12/16.
  */
 
 public class Utils {
@@ -81,5 +82,10 @@ public class Utils {
         Espresso.onView(withId(id)).perform(click());
         Thread.sleep(Constants.MORPH_DURATION);
         Espresso.onView(withId(R.id.circularButton2)).check(matches(withText(text)));
+    }
+
+    public static void doProgress(String text) throws InterruptedException {
+        Espresso.onView(allOf(withId(R.id.button), withText(text))).perform(click());
+        Thread.sleep(Constants.TIME_GAP_BETWEEN_MANUAL_PROGRESS);
     }
 }

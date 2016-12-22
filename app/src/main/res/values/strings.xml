@@ -10,6 +10,7 @@
     <string name="ProgressPaddingSample">Progress Padding Sample</string>
     <string name="CustomSelectorSample">Custom Selector Sample</string>
     <string name="doProgress">DoProgress</string>
+    <string name="progress_amount">Progress completed :</string>
 
     <array name="sample_list">
         <item>@string/IndeterminateProgressSample</item>
