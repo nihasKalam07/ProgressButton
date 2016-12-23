@@ -10,7 +10,7 @@ The lib is available on jcenter, you can find it with
 
 ```
 dependencies {
-    compile 'com.nihaskalam.android:progress-button:1.0.0'
+    compile 'com.nihaskalam.android:progress-button:1.0.1'
 }
 ```
 
